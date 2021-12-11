@@ -1,0 +1,30 @@
+body {
+  text-align: center;
+}
+
+h1 {
+  font-size: 30px;
+  text-transform: uppercase;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+body button {
+  font-size: 20px;
+  background-color: black;
+  color: #fff;
+  padding: 10px 20px;
+  border: 0;
+  box-shadow: 0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.right {
+  max-width: 200px;
+}
