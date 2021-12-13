@@ -7,7 +7,7 @@ class Game {
     this.fireId = null
     this.damageId = null
     this.gold = 0
-    this.round = 0
+    this.round = 10
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -101,7 +101,7 @@ class Game {
     //const randomShape = Math.floor(Math.random() * 300 + 150)
     //const randomPosition = Math.floor(Math.random() * 300 + 150)
 
-    const shapeArr = ["medusa", "lizard"]
+    const shapeArr = ["medusa", "lizard", "jihn", "demon"]
     const randomShape = shapeArr[Math.floor(Math.random() * shapeArr.length)]
 
     const yArr = [345, 390, 435]
@@ -135,7 +135,7 @@ class Game {
 
   shouldEnemyDie() {
     this.enemies.forEach(enemy => {
-      if (enemy.yFrame === 1 && enemy.xFrame === 5) {
+      if (enemy.yFrame === 1 && enemy.xFrame === (enemy.position === "left" ? 5 : enemy.horizontalFrames - enemy.getResetFrame() - 1)) {
         this.enemies.splice(this.enemies.indexOf(enemy), 1)
       }
     })

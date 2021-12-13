@@ -1,7 +1,7 @@
 class Bullet {
-  constructor(ctx, shape, x, y, vx, vy) {
+  constructor(ctx, shape, position, x, y, vx, vy) {
     this.ctx = ctx
-
+    this.position = position
     this.width = 45
     this.height = 45
     this.shape = shape
@@ -19,29 +19,17 @@ class Bullet {
     water 2 - 8
     tornado 3 y 9 o solo 9
     */
-    if (this.dies) {
       switch (shape) {
         case "fireball":
-          this.xFrame = 1
+          this.xFrame = this.position === "right" ? 0 : 9
           break;
         case "water":
-          this.xFrame = 3
+          this.xFrame = this.position === "right" ? 2 : 7
           break;
         default:
           break;
       }
-    } else {
-      switch (shape) {
-        case "fireball":
-          this.xFrame = 0
-          break;
-        case "water":
-          this.xFrame = 2
-          break;
-        default:
-          break;
-      }
-    }
+    
 
 
     this.yFrame = 0
@@ -49,7 +37,7 @@ class Bullet {
     this.tick = 0
 
     this.img = new Image()
-    this.img.src = `asset/images/bullet.png`
+    this.img.src = `asset/images/${this.position === "right" ? "bullet" : "bullet-reverse"}.png`
     this.img.isReady = false
 
     this.img.onload = () => {
@@ -87,15 +75,16 @@ class Bullet {
       this.x += this.vx
       this.y += this.vy
     } else {
-       switch (this.shape) {
-      case "fireball":
-        this.xFrame = 5
-        break;
-      case "water":
-        this.xFrame = 8
-        break;
-      default:
-        break;
-    }}
+      switch (this.shape) {
+        case "fireball":
+          this.xFrame = this.xFrame = this.position === "right" ? 5 : 4
+          break;
+        case "water":
+          this.xFrame = this.xFrame = this.position === "right" ? 8 : 1
+          break;
+        default:
+          break;
+      }
+    }
   }
 }

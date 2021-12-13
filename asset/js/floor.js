@@ -62,7 +62,7 @@ class Floor {
         default:
           break;
       }
-      this.bullets.push(new Bullet(this.ctx, bulletShape, towerX, towerY, Math.sin(angle) * speed, Math.cos(angle) * speed))
+      this.bullets.push(new Bullet(this.ctx, bulletShape, nearestEnemy.position, towerX, towerY, Math.sin(angle) * speed, Math.cos(angle) * speed))
     }
   }
 
@@ -85,7 +85,7 @@ class Floor {
             enemyBeated = enemy
             enemy.dying = true
             if (enemy.yFrame !== 1) {
-              enemy.xFrame = 0
+              enemy.xFrame = enemy.position === "left" ? 0 : 5
             }
             enemy.yFrame = 1
             enemy.doingDamage = false

@@ -11,12 +11,10 @@ class Enemy {
     this.vx = position === "left" ? 1 : -1
 
     this.shape = shape
-    this.width = 100
-    this.height = 64
 
     this.img = new Image()
 
-    this.img.src = `asset/images/${shape}.png`
+    this.img.src = `asset/images/${this.position === "left" ? shape : `${shape}-reverse`}.png`
 
     this.img.isReady = false
 
@@ -27,7 +25,7 @@ class Enemy {
     this.horizontalFrames = 6
     this.verticalFrames = 5
 
-    this.xFrame = 0
+    this.xFrame = this.position === "left" ? 0 : this.horizontalFrames - 1
     this.yFrame = 4
 
     this.tick = 0
@@ -39,11 +37,31 @@ class Enemy {
         this.health = 75
         this.damage = 2
         this.value = 10
+        this.width = 100
+        this.height = 64
         break;
       case "lizard":
         this.health = 125
         this.damage = 1
         this.value = 15
+        this.width = 100
+        this.height = 64
+        break;
+      case "jihn":
+        this.health = 50
+        this.damage = 4
+        this.value = 30
+        this.width = 100
+        this.height = 100
+        this.y = this.y - 36
+        break;
+      case "demon":
+        this.health = 250
+        this.damage = 3
+        this.value = 50
+        this.width = 125
+        this.height = 125
+        this.y = this.y - 61
         break;
       default:
         break;
@@ -99,6 +117,38 @@ class Enemy {
             break;
         }
         break;
+      case "jihn":
+        switch (this.yFrame) {
+          case 0:
+            return 3
+          case 1:
+            return 4
+          case 2:
+            return 3
+          case 3:
+            return 1
+          case 4:
+            return 3
+          default:
+            break;
+        }
+        break;
+      case "demon":
+        switch (this.yFrame) {
+          case 0:
+            return 3
+          case 1:
+            return 5
+          case 2:
+            return 1
+          case 3:
+            return 2
+          case 4:
+            return 5
+          default:
+            break;
+        }
+        break;
       default:
         break;
     }
@@ -106,11 +156,20 @@ class Enemy {
 
   animation() {
     if (this.tick % 10 === 0) {
-      this.xFrame++
-      // Reinicia animación si está completa y no ha muerto
-      if (this.xFrame >= this.getResetFrame() && this.yFrame !== 1) {
-        this.xFrame = 0
+      if (this.position === "left") {
+        this.xFrame++
+        // Reinicia animación si está completa y no ha muerto
+        if (this.xFrame === this.getResetFrame() && this.yFrame !== 1) {
+          this.xFrame = 0
+        }
+      } else if (this.position === "right") {
+        this.xFrame--
+        // Reinicia animación si está completa y no ha muerto
+        if (this.xFrame === this.horizontalFrames - this.getResetFrame() && this.yFrame !== 1) {
+          this.xFrame = this.horizontalFrames - 1
+        }
       }
+
     }
   }
 
