@@ -2,9 +2,10 @@ class Bullet {
   constructor(ctx, shape, x, y, vx, vy) {
     this.ctx = ctx
 
-    this.width = 80
-    this.height = 80
+    this.width = 45
+    this.height = 45
     this.shape = shape
+    this.dies = false
 
     this.x = x
     this.y = y
@@ -18,17 +19,30 @@ class Bullet {
     water 2 - 8
     tornado 3 y 9 o solo 9
     */
-
-    switch (shape) {
-      case "fireball":
-        this.xFrame = 0
-        break;
-      case "water":
-        this.xFrame = 2
-        break;
-      default:
-        break;
+    if (this.dies) {
+      switch (shape) {
+        case "fireball":
+          this.xFrame = 1
+          break;
+        case "water":
+          this.xFrame = 3
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (shape) {
+        case "fireball":
+          this.xFrame = 0
+          break;
+        case "water":
+          this.xFrame = 2
+          break;
+        default:
+          break;
+      }
     }
+
 
     this.yFrame = 0
 
@@ -69,7 +83,19 @@ class Bullet {
 
   move() {
     this.animation()
-    this.x += this.vx
-    this.y += this.vy
+    if (!this.dies) {
+      this.x += this.vx
+      this.y += this.vy
+    } else {
+       switch (this.shape) {
+      case "fireball":
+        this.xFrame = 5
+        break;
+      case "water":
+        this.xFrame = 8
+        break;
+      default:
+        break;
+    }}
   }
 }

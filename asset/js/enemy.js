@@ -1,22 +1,23 @@
-const ENEMY_FREQUENCY = 50;
-
 class Enemy {
   constructor(ctx, shape, position, y) {
     this.ctx = ctx
     const offSet = 100
+    this.id = new Date()
+    this.dying = false
     this.x = position === "left" ? - offSet : this.ctx.canvas.width + offSet
     this.position = position
     this.y = y
 
     this.vx = position === "left" ? 1 : -1
 
-    this.width = 50
-    this.height = 50
+    this.shape = shape
+    this.width = 100
+    this.height = 64
 
     this.img = new Image()
-    if (shape === "skeleton") {
-      this.img.src = 'asset/images/BODY_skeleton.png'
-    }
+
+    this.img.src = `asset/images/${shape}.png`
+
     this.img.isReady = false
 
     this.img.onload = () => {
@@ -24,12 +25,29 @@ class Enemy {
     }
 
     this.horizontalFrames = 6
-    this.verticalFrames = 4
+    this.verticalFrames = 5
 
     this.xFrame = 0
-    this.yFrame = 0
+    this.yFrame = 4
 
     this.tick = 0
+
+    this.doingDamage = false
+
+    switch (shape) {
+      case "medusa":
+        this.health = 75
+        this.damage = 2
+        this.value = 10
+        break;
+      case "lizard":
+        this.health = 125
+        this.damage = 1
+        this.value = 15
+        break;
+      default:
+        break;
+    }
   }
 
   draw() {
@@ -47,10 +65,50 @@ class Enemy {
     this.tick++
   }
 
+  getResetFrame() {
+    switch (this.shape) {
+      case "medusa":
+        switch (this.yFrame) {
+          case 0:
+            return 5
+          case 1:
+            return 5
+          case 2:
+            return 1
+          case 3:
+            return 2
+          case 4:
+            return 3
+          default:
+            break;
+        }
+        break;
+      case "lizard":
+        switch (this.yFrame) {
+          case 0:
+            return 4
+          case 1:
+            return 5
+          case 2:
+            return 1
+          case 3:
+            return 2
+          case 4:
+            return 5
+          default:
+            break;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   animation() {
     if (this.tick % 10 === 0) {
       this.xFrame++
-      if (this.xFrame >= this.horizontalFrames) {
+      // Reinicia animación si está completa y no ha muerto
+      if (this.xFrame >= this.getResetFrame() && this.yFrame !== 1) {
         this.xFrame = 0
       }
     }
@@ -59,15 +117,27 @@ class Enemy {
   move() {
     this.animation()
     const towerX = (this.ctx.canvas.width / 2) - 100 / 2
-
+    const notTouchingTowerLeft = (this.x + this.width) < towerX
+    const notTouchingTowerRight = (this.x) > towerX + 100
     // moves if theres no tower in front
-    if (this.position === "left" && ((this.x + this.width) < towerX)) {
+    if (this.position === "left" && notTouchingTowerLeft && this.yFrame !== 1) {
       this.x += this.vx
     }
-    if (this.position === "right" && ((this.x) > towerX + 100)) {
+    if (this.position === "right" && notTouchingTowerRight && this.yFrame !== 1) {
       this.x += this.vx
     }
 
+    // Attacks when touching tower
+    if (this.position === "left" && !notTouchingTowerLeft || this.position === "right" && !notTouchingTowerRight) {
+      // Damage
+      if (!this.doingDamage) {
+        this.doingDamage = true
+      }
+      // Animation
+      if (!this.dying) {
+        this.yFrame = 0
+      }
+    }
     // cant go off map
     if (this.x <= 0) {
       this.x = 0
@@ -77,10 +147,15 @@ class Enemy {
     }
   }
   collidesWith(bullet) {
-    return (
-      this.x < bullet.x + bullet.width &&
-      this.x + this.width > bullet.x &&
-      this.y < bullet.y + bullet.height &&
-      this.y + this.width > bullet.y)
+    if (!bullet.dies && !this.dying) {
+      return (
+        this.x < bullet.x + bullet.width &&
+        this.x + this.width > bullet.x &&
+        this.y < bullet.y + bullet.height &&
+        this.y + this.width > bullet.y)
+    }
+  }
+  takeDamage(dmg) {
+    this.health -= dmg
   }
 }
