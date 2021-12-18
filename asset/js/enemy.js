@@ -63,6 +63,14 @@ class Enemy {
         this.height = 125
         this.y = this.y - 61
         break;
+      case "small-dragon":
+        this.health = 1000
+        this.damage = 7
+        this.value = 600
+        this.width = 110
+        this.height = 64
+        this.y = this.y
+        break;
       default:
         break;
     }
@@ -145,6 +153,22 @@ class Enemy {
             return 2
           case 4:
             return 5
+          default:
+            break;
+        }
+        break;
+      case "small-dragon":
+        switch (this.yFrame) {
+          case 0:
+            return 2
+          case 1:
+            return 3
+          case 2:
+            return 1
+          case 3:
+            return 2
+          case 4:
+            return 3
           default:
             break;
         }

@@ -19,17 +19,23 @@ class Bullet {
     water 2 - 8
     tornado 3 y 9 o solo 9
     */
-      switch (shape) {
-        case "fireball":
-          this.xFrame = this.position === "right" ? 0 : 9
-          break;
-        case "water":
-          this.xFrame = this.position === "right" ? 2 : 7
-          break;
-        default:
-          break;
-      }
-    
+    switch (shape) {
+      case "fireball":
+        this.xFrame = this.position === "right" ? 0 : 9
+        break;
+      case "water":
+        this.xFrame = this.position === "right" ? 2 : 7
+        break;
+      case "tornado":
+        this.xFrame = this.position === "right" ? 3 : 6
+        break;
+      case "rocks":
+        this.xFrame = this.position === "right" ? 1 : 8
+        break;
+      default:
+        break;
+    }
+
 
 
     this.yFrame = 0
@@ -81,6 +87,12 @@ class Bullet {
           break;
         case "water":
           this.xFrame = this.xFrame = this.position === "right" ? 8 : 1
+          break;
+        case "tornado":
+          this.xFrame = this.xFrame = this.position === "right" ? 9 : 0
+          break;
+        case "rocks":
+          this.xFrame = this.xFrame = this.position === "right" ? 7 : 2
           break;
         default:
           break;

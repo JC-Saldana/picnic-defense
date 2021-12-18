@@ -6,8 +6,8 @@ class Game {
     this.intervalId = null
     this.fireId = null
     this.damageId = null
-    this.gold = 0
-    this.round = 10
+    this.gold = 250
+    this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -62,20 +62,16 @@ class Game {
         if (enemy.doingDamage) {
           this.towerHealth -= enemy.damage
           document.getElementById("towerHealth").innerHTML = `Health: ${this.towerHealth}`
-          console.log(this.towerHealth)
         }
       });
       if (this.towerHealth <= 0) {
         const current = this.round
-        if(current > best)
-        localStorage.setItem("best", current)
+        if (current > best)
+          localStorage.setItem("best", current)
         this.gameOver()
       }
     }, 125)
-    document.getElementById("towerHealth").innerHTML = `Health: ${this.towerHealth}`
-    document.getElementById("gold").innerHTML = `Gold: ${this.gold}`
-    document.getElementById("round").innerHTML = `Round: ${this.round}`
-    document.getElementById("best").innerHTML = `Best: ${best ? best : 0}`
+    this.updateUi()
   }
 
   clear() {
@@ -84,8 +80,8 @@ class Game {
 
   draw() {
     this.background.draw()
-    this.floors.forEach(floor => {
-      floor.draw();
+    this.floors.forEach((floor, index) => {
+      floor.draw(index);
     })
     this.enemies.forEach(obstacle => {
       obstacle.draw();
@@ -101,7 +97,12 @@ class Game {
     //const randomShape = Math.floor(Math.random() * 300 + 150)
     //const randomPosition = Math.floor(Math.random() * 300 + 150)
 
-    const shapeArr = ["medusa", "lizard", "jihn", "demon"]
+    let shapeArr = ["medusa", "lizard", "jihn"]
+    if (this.round % 5 === 0) {
+      shapeArr = ["demon", "small-dragon"]
+    } else if (this.round > 5) {
+      shapeArr = ["medusa", "lizard", "jihn", "demon"]
+    }
     const randomShape = shapeArr[Math.floor(Math.random() * shapeArr.length)]
 
     const yArr = [345, 390, 435]
@@ -117,19 +118,71 @@ class Game {
   }
 
   addFloor(shape) {
-    if (this.floors.length < 4) {
-      this.floors.push(new Floor(this.ctx, shape, this.floors.length));
-      //
+    const newFloor = new Floor(this.ctx, shape, this.floors.length)
+    console.log("test1")
+    if (this.gold > this.checkPrice(newFloor.shape) && this.floors.length < 4) {
+      this.floors.push(newFloor);
+      this.gold -= 200
+      this.updateUi()
     }
+  }
+
+  checkPrice(floor) {
+    let price
+    switch (floor) {
+      case "cannon":
+        price = 200 + 500 * this.floors.length
+        break;
+      case "ballista":
+        price = 300 + 500 * this.floors.length
+        break;
+      case "blaster":
+        price = 300 + 500 * this.floors.length
+        break;
+      case "catapult":
+        price = 500 + 500 * this.floors.length
+        break;
+      default:
+        break;
+    }
+    return price
+  }
+
+  updateUi() {
+    const best = localStorage.getItem("best")
+    this.floors.length >= 4 ? document.getElementById("floor-3-data").innerHTML = ` Floor 3: ${this.floors[3].shape}` : "Empty"
+    this.floors.length >= 3 ? document.getElementById("floor-2-data").innerHTML = ` Floor 2: ${this.floors[2].shape}` : "Empty"
+    this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Floor 1: ${this.floors[1].shape}` : "Empty"
+    this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Floor 0: ${this.floors[0].shape}` : "Not floors yet"
+
+    if (this.floors.length === 4) {
+      const element = document.getElementById("floor-3")
+      element.style.visibility = "visible"
+    } else if (this.floors.length === 3) {
+      const element = document.getElementById("floor-2")
+      element.style.visibility = "visible"
+    } else if (this.floors.length === 2) {
+      const element = document.getElementById("floor-1")
+      element.style.visibility = "visible"
+    } else if (this.floors.length === 1) {
+      const element = document.getElementById("floor-0")
+      element.style.visibility = "visible"
+    }
+
+    document.getElementById("cannon").innerHTML = ` ${this.checkPrice("cannon")}`
+    document.getElementById("ballista").innerHTML = ` ${this.checkPrice("ballista")}`
+    document.getElementById("blaster").innerHTML = ` ${this.checkPrice("blaster")}`
+    document.getElementById("catapult").innerHTML = ` ${this.checkPrice("catapult")}`
+
+    document.getElementById("towerHealth").innerHTML = `Health: ${this.towerHealth}`
+    document.getElementById("gold").innerHTML = `Gold: ${this.gold}`
+    document.getElementById("round").innerHTML = `Round: ${this.round}`
+    document.getElementById("best").innerHTML = `Best: ${best ? best : 0}`
   }
 
   collisionLogic() {
     this.floors.forEach(floor => {
-      const enemyBeated = floor.checkCollissions(this.enemies)
-      if (enemyBeated >= 0) {
-        this.gold += enemyBeated.value
-        document.getElementById("gold").innerHTML = `Gold: ${this.gold}`
-      }
+      floor.checkCollissions(this.enemies)
     });
   }
 
@@ -137,6 +190,8 @@ class Game {
     this.enemies.forEach(enemy => {
       if (enemy.yFrame === 1 && enemy.xFrame === (enemy.position === "left" ? 5 : enemy.horizontalFrames - enemy.getResetFrame() - 1)) {
         this.enemies.splice(this.enemies.indexOf(enemy), 1)
+        this.gold += enemy.value
+        this.updateUi()
       }
     })
   }
@@ -146,7 +201,7 @@ class Game {
     clearInterval(this.intervalId)
     clearInterval(this.damageId)
     clearInterval(this.fireId)
-    
+
     this.ctx.save()
 
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
@@ -190,8 +245,58 @@ class Game {
         this.round++
         document.getElementById("round").innerHTML = `Round: ${this.round}`
         this.roundPoints = 100 + 20 * this.round
-      }, 3000);
+      }, 5000);
     }
+  }
+
+  sortFloors(message) {
+    switch (message) {
+      case "3-down":
+        let temp5 = this.floors[2]
+        this.floors[2] = this.floors[3]
+        this.floors[3] = temp5
+        this.floors[2].y += 112
+        this.floors[3].y -= 112
+        break;
+      case "2-up":
+        let temp4 = this.floors[2]
+        this.floors[2] = this.floors[3]
+        this.floors[3] = temp4
+        this.floors[2].y += 112
+        this.floors[3].y -= 112
+        break;
+      case "2-down":
+        let temp3 = this.floors[1]
+        this.floors[1] = this.floors[2]
+        this.floors[2] = temp3
+        this.floors[1].y += 112
+        this.floors[2].y -= 112
+        break;
+      case "1-up":
+        let temp2 = this.floors[1]
+        this.floors[1] = this.floors[2]
+        this.floors[2] = temp2
+        this.floors[1].y += 112
+        this.floors[2].y -= 112
+        break;
+      case "1-down":
+        let temp1 = this.floors[0]
+        this.floors[0] = this.floors[1]
+        this.floors[1] = temp1
+        this.floors[0].y += 112
+        this.floors[1].y -= 112
+        break;
+      case "0-up":
+        let temp0 = this.floors[0]
+        this.floors[0] = this.floors[1]
+        this.floors[1] = temp0
+        this.floors[0].y += 112
+        this.floors[1].y -= 112
+        break;
+      default:
+        break;
+    }
+    this.updateUi()
   }
 
 }

@@ -10,14 +10,14 @@ h1 {
 }
 
 body button {
-  font-size: 20px;
+/*   font-size: 20px;
   background-color: black;
   color: #fff;
   padding: 10px 20px;
   border: 0;
   box-shadow: 0;
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; */
 }
 main {
   display: flex;
@@ -27,4 +27,35 @@ main {
 }
 .right {
   max-width: 200px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding: 30px;
+  text-align: left;
+}
+.tower-select {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  max-width: 135px;
+}
+.tower-select img {
+  width: 50px;
+}
+.tower-select button {
+  width: 55px;
+}
+.floor-sort {
+  justify-self: center;
+}
+.weapon {
+  display: flex;
+  flex-direction: column;
+  max-width: 50px;
+}
+.floor-sort > div {
+  visibility: hidden;
 }

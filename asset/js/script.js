@@ -23,3 +23,22 @@ document.getElementById("cannon").addEventListener('click', () => {
 document.getElementById("catapult").addEventListener('click', () => {
   game.addFloor("catapult")
 })
+
+document.getElementById("3-down").addEventListener('click', () => {
+  game.sortFloors("3-down")
+})
+document.getElementById("2-down").addEventListener('click', () => {
+  game.sortFloors("2-down")
+})
+document.getElementById("2-up").addEventListener('click', () => {
+  game.sortFloors("2-up")
+})
+document.getElementById("1-up").addEventListener('click', () => {
+  game.sortFloors("1-up")
+})
+document.getElementById("1-down").addEventListener('click', () => {
+  game.sortFloors("1-down")
+})
+document.getElementById("0-up").addEventListener('click', () => {
+  game.sortFloors("0-up")
+})
