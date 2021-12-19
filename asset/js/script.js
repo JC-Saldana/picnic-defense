@@ -4,13 +4,12 @@ const ctx = canvas.getContext('2d')
 
 const game = new Game(ctx)
 
-const button = document.getElementById('start-button')
+const startButton = document.getElementById('start-button')
 
-button.onclick = () => {
-  button.remove()
+startButton.addEventListener('click', () => {
+  startButton.remove()
   game.start()
-}
-
+})
 document.getElementById("ballista").addEventListener('click', () => {
   game.addFloor("ballista")
 })

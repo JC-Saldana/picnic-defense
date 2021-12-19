@@ -6,7 +6,7 @@ class Game {
     this.intervalId = null
     this.damageId = null
     this.gold = 25000
-    this.round = 1
+    this.round = 10
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -21,6 +21,7 @@ class Game {
   }
 
   start() {
+    console.log("starting")
     const best = localStorage.getItem("best")
     if (!this.intervalId) {
       this.intervalId = setInterval(() => {
@@ -39,7 +40,7 @@ class Game {
       this.enemies.forEach(enemy => {
         if (enemy.doingDamage) {
           this.towerHealth -= enemy.damage
-          document.getElementById("towerHealth").innerHTML = `Health: ${this.towerHealth}`
+          this.updateUi()
         }
       });
       if (this.towerHealth <= 0) {
@@ -120,7 +121,6 @@ class Game {
 
   addFloor(shape) {
     const newFloor = new Floor(this.ctx, shape, this.floors.length)
-    console.log("test1")
     if (this.gold > this.checkPrice(newFloor.shape) && this.floors.length < 4) {
       this.floors.push(newFloor);
       this.gold -= 200
@@ -156,10 +156,10 @@ class Game {
     this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Lvl ${this.floors[1].lvl} ${this.floors[1].shape} ` : "Empty"
     this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Lvl ${this.floors[0].lvl} ${this.floors[0].shape} ` : "Not floors yet"
 
-    this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl * 500}` : null
-    this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl * 500}` : null
-    this.floors.length >= 2 ? document.getElementById("1-upgrade").innerHTML = ` ${this.floors[1].lvl * 500}` : null
-    this.floors.length >= 1 ? document.getElementById("0-upgrade").innerHTML = ` ${this.floors[0].lvl * 500}` : null
+    this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl * 500}` : document.getElementById("3-upgrade").innerHTML = null
+    this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl * 500}` : document.getElementById("2-upgrade").innerHTML = null
+    this.floors.length >= 2 ? document.getElementById("1-upgrade").innerHTML = ` ${this.floors[1].lvl * 500}` : document.getElementById("1-upgrade").innerHTML = null
+    this.floors.length >= 1 ? document.getElementById("0-upgrade").innerHTML = ` ${this.floors[0].lvl * 500}` : document.getElementById("0-upgrade").innerHTML = null
 
     if (this.floors.length === 4) {
       const element = document.getElementById("floor-3")
@@ -180,10 +180,9 @@ class Game {
     document.getElementById("blaster").innerHTML = ` ${this.checkPrice("blaster")}`
     document.getElementById("catapult").innerHTML = ` ${this.checkPrice("catapult")}`
 
-    document.getElementById("towerHealth").innerHTML = `Health: ${this.towerHealth}`
-    document.getElementById("gold").innerHTML = `Gold: ${this.gold}`
-    document.getElementById("round").innerHTML = `Round: ${this.round}`
-    document.getElementById("best").innerHTML = `Best: ${best ? best : 0}`
+    document.getElementById("towerHealth").innerHTML = `<i class="fas fa-heart"></i> ${this.towerHealth}`
+    document.getElementById("gold").innerHTML = `<i class="fab fa-bitcoin"></i> ${this.gold}`
+    document.getElementById("round").innerHTML = `Round: ${this.round} (Best: ${best ? best : 0})`
   }
 
   collisionLogic() {
@@ -203,9 +202,6 @@ class Game {
   }
 
   gameOver() {
-    this.towerHealth = 0
-    clearInterval(this.intervalId)
-    clearInterval(this.damageId)
 
     this.ctx.save()
 
@@ -218,12 +214,50 @@ class Game {
     this.ctx.fillText('Game Over', this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
 
     this.ctx.restore()
+
+    this.restart()
+  }
+
+  restart() {
+    console.log("restart")
+    // Restart button
+    const startButton = document.createElement("button")
+    startButton.innerHTML = `<i class="fas fa-play"></i>`
+    startButton.setAttribute("id", "start-button")
+    startButton.setAttribute("class", "start-button")
+    startButton.setAttribute("onclick", "game.start(); document.getElementById('start-button').remove()")
+    document.getElementById("game-board").appendChild(startButton)
+
+
+    clearInterval(this.intervalId)
+    clearInterval(this.damageId)
+
+    this.intervalId = null
+
+    this.gold = 25000
+    this.round = 1
+    this.roundPoints = 0
+    this.towerHealth = 150
+    this.changindRound = false
+
+    this.enemies = [];
+    this.floors = [];
+    this.enemyFramesCount = 0;
+    this.fireFramesCount = 0;
+    
+    this.updateUi()
+
+    this.ctx.save()
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.ctx.restore()
+
+    //this.start()
   }
 
   checkRound() {
     if (this.roundPoints > 0) {
       this.enemySpawnLogic()
-    } else if(!this.enemies.length){
+    } else if (!this.enemies.length) {
       this.newRound()
     }
   }
@@ -248,7 +282,7 @@ class Game {
       setTimeout(() => {
         this.changindRound = false
         this.round++
-        document.getElementById("round").innerHTML = `Round: ${this.round}`
+        this.updateUi()
         this.roundPoints = 100 + 20 * this.round
       }, 2500);
     }
