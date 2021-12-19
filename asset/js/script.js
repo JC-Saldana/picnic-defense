@@ -42,3 +42,15 @@ document.getElementById("1-down").addEventListener('click', () => {
 document.getElementById("0-up").addEventListener('click', () => {
   game.sortFloors("0-up")
 })
+document.getElementById("3-upgrade").addEventListener('click', () => {
+  game.lvlFloor(3)
+})
+document.getElementById("2-upgrade").addEventListener('click', () => {
+  game.lvlFloor(2)
+})
+document.getElementById("1-upgrade").addEventListener('click', () => {
+  game.lvlFloor(1)
+})
+document.getElementById("0-upgrade").addEventListener('click', () => {
+  game.lvlFloor(0)
+})

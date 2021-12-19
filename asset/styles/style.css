@@ -26,13 +26,13 @@ main {
   flex-direction: row;
 }
 .right {
-  max-width: 200px;
+  max-width: 250px;
   height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: flex-start;
-  padding: 30px;
+  padding-left: 30px;
   text-align: left;
 }
 .tower-select {

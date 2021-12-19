@@ -4,10 +4,9 @@ class Game {
 
     this.background = new Background(ctx)
     this.intervalId = null
-    this.fireId = null
     this.damageId = null
-    this.gold = 250
-    this.round = 0
+    this.gold = 25000
+    this.round = 1
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -16,6 +15,7 @@ class Game {
     this.enemies = [];
     this.floors = [];
     this.enemyFramesCount = 0;
+    this.fireFramesCount = 0;
 
     //this.score = 0
   }
@@ -30,31 +30,9 @@ class Game {
         this.draw()
         this.collisionLogic()
         this.shouldEnemyDie()
+        this.fire()
       }, 1000 / 60)
     }
-
-    const nearestEnemy = () => {
-      let lowestDistance = 1000
-      const towerX = this.ctx.canvas.width / 2
-      let nearestEnemy = null
-      this.enemies.forEach(enemy => {
-        const distance = Math.abs(towerX - 50 - enemy.x)
-        if (distance < lowestDistance && enemy.yFrame !== 1) {
-          lowestDistance = distance
-          nearestEnemy = enemy
-        }
-      })
-      return nearestEnemy
-    }
-
-    // Fire interval
-    this.fireId = setInterval(() => {
-      this.floors.forEach(floor => {
-        if (this.enemies.length) {
-          floor.fire(nearestEnemy())
-        }
-      });
-    }, 500)
 
     // Enemy damage check interval
     this.damageId = setInterval(() => {
@@ -72,6 +50,29 @@ class Game {
       }
     }, 125)
     this.updateUi()
+  }
+
+  nearestEnemy = () => {
+    let lowestDistance = 1000
+    const towerX = this.ctx.canvas.width / 2
+    let nearestEnemy = null
+    this.enemies.forEach(enemy => {
+      const distance = Math.abs(towerX - 50 - enemy.x)
+      if (distance < lowestDistance && enemy.yFrame !== 1) {
+        lowestDistance = distance
+        nearestEnemy = enemy
+      }
+    })
+    return nearestEnemy
+  }
+
+  fire() {
+    this.floors.forEach(floor => {
+      if (this.enemies.length) {
+        floor.fire(this.nearestEnemy())
+      }
+    });
+
   }
 
   clear() {
@@ -150,10 +151,15 @@ class Game {
 
   updateUi() {
     const best = localStorage.getItem("best")
-    this.floors.length >= 4 ? document.getElementById("floor-3-data").innerHTML = ` Floor 3: ${this.floors[3].shape}` : "Empty"
-    this.floors.length >= 3 ? document.getElementById("floor-2-data").innerHTML = ` Floor 2: ${this.floors[2].shape}` : "Empty"
-    this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Floor 1: ${this.floors[1].shape}` : "Empty"
-    this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Floor 0: ${this.floors[0].shape}` : "Not floors yet"
+    this.floors.length >= 4 ? document.getElementById("floor-3-data").innerHTML = ` Lvl ${this.floors[3].lvl} ${this.floors[3].shape} ` : "Empty"
+    this.floors.length >= 3 ? document.getElementById("floor-2-data").innerHTML = ` Lvl ${this.floors[2].lvl} ${this.floors[2].shape} ` : "Empty"
+    this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Lvl ${this.floors[1].lvl} ${this.floors[1].shape} ` : "Empty"
+    this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Lvl ${this.floors[0].lvl} ${this.floors[0].shape} ` : "Not floors yet"
+
+    this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl * 500}` : null
+    this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl * 500}` : null
+    this.floors.length >= 2 ? document.getElementById("1-upgrade").innerHTML = ` ${this.floors[1].lvl * 500}` : null
+    this.floors.length >= 1 ? document.getElementById("0-upgrade").innerHTML = ` ${this.floors[0].lvl * 500}` : null
 
     if (this.floors.length === 4) {
       const element = document.getElementById("floor-3")
@@ -200,7 +206,6 @@ class Game {
     this.towerHealth = 0
     clearInterval(this.intervalId)
     clearInterval(this.damageId)
-    clearInterval(this.fireId)
 
     this.ctx.save()
 
@@ -218,7 +223,7 @@ class Game {
   checkRound() {
     if (this.roundPoints > 0) {
       this.enemySpawnLogic()
-    } else {
+    } else if(!this.enemies.length){
       this.newRound()
     }
   }
@@ -245,7 +250,7 @@ class Game {
         this.round++
         document.getElementById("round").innerHTML = `Round: ${this.round}`
         this.roundPoints = 100 + 20 * this.round
-      }, 5000);
+      }, 2500);
     }
   }
 
@@ -297,6 +302,16 @@ class Game {
         break;
     }
     this.updateUi()
+  }
+
+  lvlFloor(floorIndex) {
+    let floor = this.floors[floorIndex]
+    if (floor.lvl < 3) {
+      this.gold -= floor.lvl * 500
+      floor.lvl++
+      floor.lvlUp()
+      this.updateUi()
+    }
   }
 
 }

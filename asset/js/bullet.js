@@ -22,15 +22,19 @@ class Bullet {
     switch (shape) {
       case "fireball":
         this.xFrame = this.position === "right" ? 0 : 9
+        this.dmg = 50
         break;
       case "water":
         this.xFrame = this.position === "right" ? 2 : 7
+        this.dmg = 5
         break;
       case "tornado":
         this.xFrame = this.position === "right" ? 3 : 6
+        this.dmg = 10
         break;
       case "rocks":
         this.xFrame = this.position === "right" ? 1 : 8
+        this.dmg = 35
         break;
       default:
         break;

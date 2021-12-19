@@ -6,6 +6,8 @@ class Floor {
     this.height = 188
     this.shape = shape
     this.floorCount = floorCount
+    this.fireFramesCount = 0;
+    this.lvl = 1
 
     this.x = (this.ctx.canvas.width / 2) - this.width / 2
     this.y = (this.ctx.canvas.height - this.height - 35) - (this.height * 0.6) * floorCount
@@ -34,6 +36,23 @@ class Floor {
 
     this.roof.onload = () => {
       this.roof.isReady = true
+    }
+
+    switch (this.shape) {
+      case "cannon":
+        this.fireSpeed = 45 - this.lvl * 20
+        break;
+      case "ballista":
+        this.fireSpeed = 60 - this.lvl * 5
+        break;
+      case "blaster":
+        this.fireSpeed = 70 - this.lvl * 5
+        break;
+      case "catapult":
+        this.fireSpeed = 85 - this.lvl * 5
+        break;
+      default:
+        break;
     }
   }
 
@@ -101,7 +120,7 @@ class Floor {
   }
 
   fire(nearestEnemy) {
-    if (nearestEnemy) {
+    if (nearestEnemy && this.fireFramesCount % this.fireSpeed === 0) {
       const towerX = (this.ctx.canvas.width / 2) + (this.ctx.canvas.width / 2 > nearestEnemy.x ? - 50 : 25)
       const towerY = this.y + (this.floorCount * 50) + 90
       let dx = (nearestEnemy.x + (nearestEnemy.width / 2)) - towerX
@@ -127,6 +146,7 @@ class Floor {
       }
       this.bullets.push(new Bullet(this.ctx, bulletShape, nearestEnemy.position, towerX, towerY, Math.sin(angle) * speed, Math.cos(angle) * speed))
     }
+    this.fireFramesCount++
   }
 
   move() {
@@ -136,19 +156,20 @@ class Floor {
   checkCollissions(enemies) {
     let condition
     let enemyBeated = -1
-    let bulletBeated
     enemies.forEach(enemy => {
       this.bullets.forEach(bullet => {
         if (enemy.collidesWith(bullet)) {
-          if(bullet.shape === "tornado") {
+          if (bullet.shape === "tornado") {
             const movedInterval = setInterval(() => {
               enemy.position === "left" ? enemy.x -= 5 : enemy.x += 5
             }, 2);
             setTimeout(() => {
               clearInterval(movedInterval)
             }, 70);
+          } else if (bullet.shape === "water") {
+            enemy.vx *= 0.5
           }
-          enemy.takeDamage(50)
+          enemy.takeDamage(bullet.dmg)
           condition = true
           if (enemy.health <= 0) {
             enemyBeated = enemy
@@ -159,13 +180,7 @@ class Floor {
             enemy.yFrame = 1
             enemy.doingDamage = false
           }
-          bulletBeated = bullet.id
           bullet.dies = true
-          if (bullet.shape === "water") {
-            bullet.yFrame = 3
-          } else {
-            bullet.yFrame = 0
-          }
         }
       });
     })
@@ -177,6 +192,24 @@ class Floor {
   deleteOldBullets() {
     while (this.bullets.length > 10) {
       this.bullets.shift()
+    }
+  }
+  lvlUp() {
+    switch (this.shape) {
+      case "cannon":
+        this.fireSpeed -= 8
+        break;
+      case "ballista":
+        this.fireSpeed -= 2
+        break;
+      case "blaster":
+        this.fireSpeed -= 2
+        break;
+      case "catapult":
+        this.fireSpeed -= 2
+        break;
+      default:
+        break;
     }
   }
 }
