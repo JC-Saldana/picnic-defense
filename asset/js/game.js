@@ -5,7 +5,7 @@ class Game {
     this.background = new Background(ctx)
     this.intervalId = null
     this.damageId = null
-    this.gold = 500
+    this.gold = 5000
     this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
@@ -348,7 +348,7 @@ class Game {
 
   lvlFloor(floorIndex) {
     let floor = this.floors[floorIndex]
-    if (floor.lvl < 3) {
+    if (floor.lvl < 3 && this.gold >= floor.lvl * 2500 - 1500) {
       this.gold -= floor.lvl * 2500 - 1500
       floor.lvl++
       floor.lvlUp()
