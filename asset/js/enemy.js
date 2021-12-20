@@ -8,8 +8,6 @@ class Enemy {
     this.position = position
     this.y = y
 
-    this.vx = position === "left" ? 1 : -1
-
     this.shape = shape
 
     this.img = new Image()
@@ -36,6 +34,7 @@ class Enemy {
       case "medusa":
         this.health = 75
         this.damage = 2
+        this.vx = position === "left" ? 2 : -2
         this.value = 10
         this.width = 100
         this.height = 64
@@ -43,6 +42,7 @@ class Enemy {
       case "lizard":
         this.health = 125
         this.damage = 1
+        this.vx = position === "left" ? 1.25 : -1.25
         this.value = 15
         this.width = 100
         this.height = 64
@@ -50,14 +50,16 @@ class Enemy {
       case "jihn":
         this.health = 50
         this.damage = 4
+        this.vx = position === "left" ? 0.75 : -0.75
         this.value = 30
         this.width = 100
         this.height = 100
         this.y = this.y - 36
         break;
       case "demon":
-        this.health = 250
+        this.health = 300
         this.damage = 3
+        this.vx = position === "left" ? 0.90 : -0.90
         this.value = 50
         this.width = 125
         this.height = 125
@@ -66,6 +68,7 @@ class Enemy {
       case "small-dragon":
         this.health = 1000
         this.damage = 7
+        this.vx = position === "left" ? 0.8 : -0.8
         this.value = 600
         this.width = 110
         this.height = 64

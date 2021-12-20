@@ -5,8 +5,8 @@ class Game {
     this.background = new Background(ctx)
     this.intervalId = null
     this.damageId = null
-    this.gold = 25000
-    this.round = 10
+    this.gold = 250
+    this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -151,10 +151,10 @@ class Game {
 
   updateUi() {
     const best = localStorage.getItem("best")
-    this.floors.length >= 4 ? document.getElementById("floor-3-data").innerHTML = ` Lvl ${this.floors[3].lvl} ${this.floors[3].shape} ` : "Empty"
-    this.floors.length >= 3 ? document.getElementById("floor-2-data").innerHTML = ` Lvl ${this.floors[2].lvl} ${this.floors[2].shape} ` : "Empty"
-    this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Lvl ${this.floors[1].lvl} ${this.floors[1].shape} ` : "Empty"
-    this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Lvl ${this.floors[0].lvl} ${this.floors[0].shape} ` : "Not floors yet"
+    this.floors.length >= 4 ? document.getElementById("floor-3-data").innerHTML = ` Lvl ${this.floors[3].lvl} ${this.floors[3].shape} ` : document.getElementById("floor-3-data").innerHTML = null
+    this.floors.length >= 3 ? document.getElementById("floor-2-data").innerHTML = ` Lvl ${this.floors[2].lvl} ${this.floors[2].shape} ` : document.getElementById("floor-2-data").innerHTML = null
+    this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Lvl ${this.floors[1].lvl} ${this.floors[1].shape} ` : document.getElementById("floor-1-data").innerHTML = null
+    this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Lvl ${this.floors[0].lvl} ${this.floors[0].shape} ` : document.getElementById("floor-0-data").innerHTML = null
 
     this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl * 500}` : document.getElementById("3-upgrade").innerHTML = null
     this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl * 500}` : document.getElementById("2-upgrade").innerHTML = null
@@ -173,6 +173,16 @@ class Game {
     } else if (this.floors.length === 1) {
       const element = document.getElementById("floor-0")
       element.style.visibility = "visible"
+    } else if (this.floors.length === 0) {
+      const floor3 = document.getElementById("floor-3")
+      const floor2 = document.getElementById("floor-2")
+      const floor1 = document.getElementById("floor-1")
+      const floor0 = document.getElementById("floor-0")
+
+      floor3.style.visibility = "hidden"
+      floor2.style.visibility = "hidden"
+      floor1.style.visibility = "hidden"
+      floor0.style.visibility = "hidden"
     }
 
     document.getElementById("cannon").innerHTML = ` ${this.checkPrice("cannon")}`
@@ -234,8 +244,8 @@ class Game {
 
     this.intervalId = null
 
-    this.gold = 25000
-    this.round = 1
+    this.gold = 250
+    this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
     this.changindRound = false
@@ -244,14 +254,13 @@ class Game {
     this.floors = [];
     this.enemyFramesCount = 0;
     this.fireFramesCount = 0;
-    
+
     this.updateUi()
 
     this.ctx.save()
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.ctx.restore()
 
-    //this.start()
   }
 
   checkRound() {
