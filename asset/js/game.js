@@ -5,7 +5,7 @@ class Game {
     this.background = new Background(ctx)
     this.intervalId = null
     this.damageId = null
-    this.gold = 5000
+    this.gold = 500
     this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
