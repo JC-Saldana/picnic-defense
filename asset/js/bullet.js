@@ -14,6 +14,7 @@ class Bullet {
 
     this.horizontalFrames = 10
     this.verticalFrames = 13
+
     /*
     fireball 0 - 5
     water 2 - 8
@@ -27,14 +28,20 @@ class Bullet {
       case "water":
         this.xFrame = this.position === "right" ? 2 : 7
         this.dmg = 5
+        this.width *= 0.75
+        this.height *= 0.75
         break;
       case "tornado":
         this.xFrame = this.position === "right" ? 3 : 6
-        this.dmg = 10
+        this.dmg = 1
+        this.width *= 1.25
+        this.height *= 1.25
         break;
       case "rocks":
         this.xFrame = this.position === "right" ? 1 : 8
-        this.dmg = 35
+        this.dmg = 3
+        this.width *= 1.5
+        this.height *= 1.5
         break;
       default:
         break;
@@ -72,7 +79,15 @@ class Bullet {
 
   animation() {
     if (this.tick % 10 === 0) {
-      this.yFrame++
+      // Stops rocks animation
+      if (this.shape === "rocks") {
+        if (this.yFrame < 4) {
+          this.yFrame++
+        }
+      } else {
+        this.yFrame++
+      }
+      // Reset x
       if (this.yFrame >= this.horizontalFrames) {
         this.xFrame = 0
       }
@@ -81,25 +96,28 @@ class Bullet {
 
   move() {
     this.animation()
-    if (!this.dies) {
+    if (!this.dies || this.shape === "tornado") {
       this.x += this.vx
       this.y += this.vy
-    } else {
-      switch (this.shape) {
-        case "fireball":
-          this.xFrame = this.xFrame = this.position === "right" ? 5 : 4
-          break;
-        case "water":
-          this.xFrame = this.xFrame = this.position === "right" ? 8 : 1
-          break;
-        case "tornado":
-          this.xFrame = this.xFrame = this.position === "right" ? 9 : 0
-          break;
-        case "rocks":
-          this.xFrame = this.xFrame = this.position === "right" ? 7 : 2
-          break;
-        default:
-          break;
+    }
+    if (this.dies) {
+      {
+        switch (this.shape) {
+          case "fireball":
+            this.xFrame = this.xFrame = this.position === "right" ? 5 : 4
+            break;
+          case "water":
+            this.xFrame = this.xFrame = this.position === "right" ? 8 : 1
+            break;
+          case "tornado":
+            this.xFrame = this.xFrame = this.position === "right" ? 9 : 0
+            break;
+          case "rocks":
+            this.xFrame = this.xFrame = this.position === "right" ? 7 : 2
+            break;
+          default:
+            break;
+        }
       }
     }
   }

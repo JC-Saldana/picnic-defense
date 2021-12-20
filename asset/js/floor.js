@@ -106,12 +106,12 @@ class Floor {
         )
       }
     }
-    this.shouldBulletLive()
+    this.shouldBulletDie()
     this.bullets.forEach(bullet => {
       bullet.draw();
     })
   }
-  shouldBulletLive() {
+  shouldBulletDie() {
     this.bullets.forEach(bullet => {
       if (bullet.x < 0 || bullet.x > this.ctx.canvas.width) {
         this.bullets.splice(this.bullets.indexOf(bullet), 1)
@@ -161,16 +161,18 @@ class Floor {
         if (enemy.collidesWith(bullet)) {
           if (bullet.shape === "tornado") {
             const movedInterval = setInterval(() => {
-              enemy.position === "left" ? enemy.x -= 5 : enemy.x += 5
-            }, 2);
+              enemy.position === "left" ? enemy.x -= 1 : enemy.x += 1
+            }, 1);
             setTimeout(() => {
               clearInterval(movedInterval)
             }, 70);
           } else if (bullet.shape === "water") {
             enemy.vx *= 0.5
           }
-          enemy.takeDamage(bullet.dmg)
           condition = true
+          if(bullet.shape !== "rocks") {
+            enemy.takeDamage(bullet.dmg)
+          }
           if (enemy.health <= 0) {
             enemyBeated = enemy
             enemy.dying = true
@@ -190,7 +192,11 @@ class Floor {
     }
   }
   deleteOldBullets() {
-    while (this.bullets.length > 10) {
+    let maxBullets = 10
+    if (this.shape === "catapult") {
+      maxBullets = 5
+    }
+    while (this.bullets.length > maxBullets) {
       this.bullets.shift()
     }
   }

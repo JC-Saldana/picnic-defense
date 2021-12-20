@@ -1,5 +1,5 @@
 class Enemy {
-  constructor(ctx, shape, position, y) {
+  constructor(ctx, shape, position, y, extraHp) {
     this.ctx = ctx
     const offSet = 100
     this.id = new Date()
@@ -7,6 +7,7 @@ class Enemy {
     this.x = position === "left" ? - offSet : this.ctx.canvas.width + offSet
     this.position = position
     this.y = y
+    this.extraHp = extraHp
 
     this.shape = shape
 
@@ -59,7 +60,7 @@ class Enemy {
       case "demon":
         this.health = 300
         this.damage = 3
-        this.vx = position === "left" ? 0.90 : -0.90
+        this.vx = position === "left" ? 0.9 : -0.9
         this.value = 50
         this.width = 125
         this.height = 125
@@ -77,6 +78,7 @@ class Enemy {
       default:
         break;
     }
+    this.health += this.extraHp
   }
 
   draw() {
@@ -232,16 +234,33 @@ class Enemy {
       this.x = this.ctx.canvas.width - this.width
     }
   }
+
   collidesWith(bullet) {
-    if (!bullet.dies && !this.dying) {
-      return (
-        this.x < bullet.x + bullet.width &&
-        this.x + this.width > bullet.x &&
-        this.y < bullet.y + bullet.height &&
-        this.y + this.width > bullet.y)
+    const collideContidion = (
+      this.x < bullet.x + bullet.width &&
+      this.x + this.width > bullet.x &&
+      this.y < bullet.y + bullet.height &&
+      this.y + this.width > bullet.y)
+
+    if (bullet.shape === "rocks") {
+      this.dying === false
+      if (!this.dying && Math.random() < 0.03) {
+        this.takeDamage(bullet.dmg)
+      }
+      return collideContidion
+    } else if (bullet.shape === "tornado") {
+      this.dying === false
+      if (!this.dying && Math.random() < 0.2) {
+        this.takeDamage(bullet.dmg)
+        return collideContidion
+      }
+    } else if (!bullet.dies && !this.dying) {
+      return collideContidion
     }
   }
+
   takeDamage(dmg) {
     this.health -= dmg
   }
+
 }

@@ -5,7 +5,7 @@ class Game {
     this.background = new Background(ctx)
     this.intervalId = null
     this.damageId = null
-    this.gold = 250
+    this.gold = 500
     this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
@@ -21,7 +21,6 @@ class Game {
   }
 
   start() {
-    console.log("starting")
     const best = localStorage.getItem("best")
     if (!this.intervalId) {
       this.intervalId = setInterval(() => {
@@ -112,8 +111,9 @@ class Game {
 
     const positionArr = ["left", "right"]
     const randomPosition = positionArr[Math.floor(Math.random() * positionArr.length)]
-
-    const newEnemy = new Enemy(this.ctx, randomShape, randomPosition, randomY)
+    const extraHp = this.round * 10
+ 
+    const newEnemy = new Enemy(this.ctx, randomShape, randomPosition, randomY, extraHp)
 
     this.roundPoints -= newEnemy.value
     this.enemies.push(newEnemy);
@@ -121,9 +121,9 @@ class Game {
 
   addFloor(shape) {
     const newFloor = new Floor(this.ctx, shape, this.floors.length)
-    if (this.gold > this.checkPrice(newFloor.shape) && this.floors.length < 4) {
+    if (this.gold >= this.checkPrice(newFloor.shape) && this.floors.length < 4) {
+      this.gold -= this.checkPrice(newFloor.shape)
       this.floors.push(newFloor);
-      this.gold -= 200
       this.updateUi()
     }
   }
@@ -132,16 +132,16 @@ class Game {
     let price
     switch (floor) {
       case "cannon":
-        price = 200 + 500 * this.floors.length
+        price = 400 + 300 * this.floors.length
         break;
       case "ballista":
-        price = 300 + 500 * this.floors.length
+        price = 200 + 300 * this.floors.length
         break;
       case "blaster":
-        price = 300 + 500 * this.floors.length
+        price = 200 + 300 * this.floors.length
         break;
       case "catapult":
-        price = 500 + 500 * this.floors.length
+        price = 300 + 300 * this.floors.length
         break;
       default:
         break;
@@ -156,10 +156,10 @@ class Game {
     this.floors.length >= 2 ? document.getElementById("floor-1-data").innerHTML = ` Lvl ${this.floors[1].lvl} ${this.floors[1].shape} ` : document.getElementById("floor-1-data").innerHTML = null
     this.floors.length >= 1 ? document.getElementById("floor-0-data").innerHTML = ` Lvl ${this.floors[0].lvl} ${this.floors[0].shape} ` : document.getElementById("floor-0-data").innerHTML = null
 
-    this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl * 500}` : document.getElementById("3-upgrade").innerHTML = null
-    this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl * 500}` : document.getElementById("2-upgrade").innerHTML = null
-    this.floors.length >= 2 ? document.getElementById("1-upgrade").innerHTML = ` ${this.floors[1].lvl * 500}` : document.getElementById("1-upgrade").innerHTML = null
-    this.floors.length >= 1 ? document.getElementById("0-upgrade").innerHTML = ` ${this.floors[0].lvl * 500}` : document.getElementById("0-upgrade").innerHTML = null
+    this.floors.length >= 4 ? document.getElementById("3-upgrade").innerHTML = ` ${this.floors[3].lvl !== 3 ? this.floors[3].lvl * 2500 - 1500 : "max"}` : document.getElementById("3-upgrade").innerHTML = null
+    this.floors.length >= 3 ? document.getElementById("2-upgrade").innerHTML = ` ${this.floors[2].lvl !== 3 ? this.floors[2].lvl * 2500 - 1500 : "max"}` : document.getElementById("2-upgrade").innerHTML = null
+    this.floors.length >= 2 ? document.getElementById("1-upgrade").innerHTML = ` ${this.floors[1].lvl !== 3 ? this.floors[1].lvl * 2500 - 1500 : "max"}` : document.getElementById("1-upgrade").innerHTML = null
+    this.floors.length >= 1 ? document.getElementById("0-upgrade").innerHTML = ` ${this.floors[0].lvl !== 3 ? this.floors[0].lvl * 2500 - 1500 : "max"}` : document.getElementById("0-upgrade").innerHTML = null
 
     if (this.floors.length === 4) {
       const element = document.getElementById("floor-3")
@@ -185,10 +185,10 @@ class Game {
       floor0.style.visibility = "hidden"
     }
 
-    document.getElementById("cannon").innerHTML = ` ${this.checkPrice("cannon")}`
-    document.getElementById("ballista").innerHTML = ` ${this.checkPrice("ballista")}`
-    document.getElementById("blaster").innerHTML = ` ${this.checkPrice("blaster")}`
-    document.getElementById("catapult").innerHTML = ` ${this.checkPrice("catapult")}`
+    document.getElementById("cannon").innerHTML = ` ${this.floors.length !== 4 ? this.checkPrice("cannon") : "max"}`
+    document.getElementById("ballista").innerHTML = ` ${this.floors.length !== 4 ? this.checkPrice("ballista") : "max"}`
+    document.getElementById("blaster").innerHTML = ` ${this.floors.length !== 4 ? this.checkPrice("blaster") : "max"}`
+    document.getElementById("catapult").innerHTML = ` ${this.floors.length !== 4 ? this.checkPrice("catapult") : "max"}`
 
     document.getElementById("towerHealth").innerHTML = `<i class="fas fa-heart"></i> ${this.towerHealth}`
     document.getElementById("gold").innerHTML = `<i class="fab fa-bitcoin"></i> ${this.gold}`
@@ -229,7 +229,6 @@ class Game {
   }
 
   restart() {
-    console.log("restart")
     // Restart button
     const startButton = document.createElement("button")
     startButton.innerHTML = `<i class="fas fa-play"></i>`
@@ -244,7 +243,7 @@ class Game {
 
     this.intervalId = null
 
-    this.gold = 250
+    this.gold = 500
     this.round = 0
     this.roundPoints = 0
     this.towerHealth = 150
@@ -273,9 +272,9 @@ class Game {
 
   enemySpawnLogic() {
     // add an enemy every ENEMY_FREQUENCY
-    let ENEMY_FREQUENCY = 80 - this.round * 10;
-    if (ENEMY_FREQUENCY < 20) {
-      ENEMY_FREQUENCY = 20
+    let ENEMY_FREQUENCY = 80 - this.round * 5;
+    if (ENEMY_FREQUENCY < 10) {
+      ENEMY_FREQUENCY = 10
     }
     if (this.enemyFramesCount % ENEMY_FREQUENCY === 0) {
       this.addEnemy();
@@ -292,7 +291,7 @@ class Game {
         this.changindRound = false
         this.round++
         this.updateUi()
-        this.roundPoints = 100 + 20 * this.round
+        this.roundPoints = 100 + 30 * this.round
       }, 2500);
     }
   }
@@ -350,7 +349,7 @@ class Game {
   lvlFloor(floorIndex) {
     let floor = this.floors[floorIndex]
     if (floor.lvl < 3) {
-      this.gold -= floor.lvl * 500
+      this.gold -= floor.lvl * 2500 - 1500
       floor.lvl++
       floor.lvlUp()
       this.updateUi()
